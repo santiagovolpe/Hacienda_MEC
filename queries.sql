@@ -147,6 +147,9 @@ select distinct(descripcionEntidad) from hacienda_2019;
 -- se borra el resto
 delete from hacienda_2019 where descripcionEntidad not like '007-MINISTERIO DE EDUCACIÓN Y CIENCIAS';
 
+-- en caso de error 1175 ejecuta esto y volve a ejecutar delete
+SET SQL_SAFE_UPDATES = 0;
+
 --chequea duplicados, especificamente cuantos duplicados hay ademas del original (cuantas filas habria que borrar)
 SELECT SUM(dup_count - 1) AS redundant_duplicates
 FROM (
@@ -200,6 +203,26 @@ IGNORE 1 LINES
     anio,
     mes,
     compra);
+
+-- añadi columnas donde iran los montos en dolares
+ALTER TABLE mec_hacienda
+ADD COLUMN presupuesto_usd FLOAT,
+ADD COLUMN montoVigente_usd FLOAT,
+ADD COLUMN montoPlanFinanciero_usd FLOAT,
+ADD COLUMN montoEjecutado_usd FLOAT,
+ADD COLUMN montoTransferido_usd FLOAT,
+ADD COLUMN montoPagado_usd FLOAT;
+
+-- converti los guranies a dolares en las nuevas columnas
+UPDATE mec_hacienda a
+JOIN bcp b ON a.anio = b.anio AND a.mes = b.mes
+SET
+  a.presupuesto_usd  = a.presupuestoInicialAprobado / NULLIF(b.compra, 0),
+  a.montoVigente_usd = a.montoVigente / NULLIF(b.compra, 0),
+  a.montoPlanFinanciero_usd = a.montoPlanFinancieroVigente / NULLIF(b.compra, 0),
+  a.montoEjecutado_usd = a.montoEjecutado / NULLIF(b.compra, 0),
+  a.montoTransferido_usd = a.montoTransferido / NULLIF(b.compra, 0),
+  a.montoPagado_usd = a.montoPagado / NULLIF(b.compra, 0);
 
 
 
