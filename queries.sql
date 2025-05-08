@@ -182,6 +182,25 @@ ESCAPED BY '"'
 LINES TERMINATED BY '\r\n';
 
 
+-- crea tabla para cambio a usd
+create table bcp (
+anio INT,
+mes INT,
+compra REAL);
+
+-- cambia el archivo para insertar valores de cada año
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.4\\Uploads\\usdavg2019.csv'
+INTO TABLE bcp
+CHARACTER SET latin1
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(
+    anio,
+    mes,
+    compra);
+
 
 
 
