@@ -4,13 +4,14 @@ import requests
 import zipfile
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service  # Import Service
+from selenium.webdriver.chrome.service import Service  
 from bs4 import BeautifulSoup
+# Los requerimientos para importar estan en requirements.txt
 
 # CONFIGURACIÓN
 AÑO_DESEADO = "2019"
-CARPETA_DESTINO = f"C:\\ProgramData\\MySQL\\MySQL Server 8.4\\Uploads" //pone el path de la carpeta a la que tu sql 
-//tenga acceso para importar csvs
+# pone el path de la carpeta a la que tu sql tenga acceso para importar csvs
+CARPETA_DESTINO = f"C:\\ProgramData\\MySQL\\MySQL Server 8.4\\Uploads" 
 os.makedirs(CARPETA_DESTINO, exist_ok=True)
 
 # RUTA AL CHROMEDRIVER
