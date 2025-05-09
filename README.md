@@ -6,6 +6,7 @@ Este proyecto utilza los siguientes softwares:
 - 📊 **Power BI** para dashboards interactivos
 
 ## Ejemplo del dashboard: 
+descargar el archivo raw y abrir en PowerBi, o sino resultará en un archivo corrupto
 ![image](https://github.com/user-attachments/assets/2a78cfd3-1c77-467b-9535-3decf2c1302f)
 
 ![image](https://github.com/user-attachments/assets/929f6338-feb1-4f84-9d6d-cfd611431bc3)
