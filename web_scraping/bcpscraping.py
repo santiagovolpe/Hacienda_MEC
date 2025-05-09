@@ -17,21 +17,21 @@ driver.get(website)
 wait = WebDriverWait(driver, 10)
 
 
-month_averages = []  # To store averages for each month
-year = 2019
+month_averages = []  # Array para guardar el promedio de cada mes
+year = 2019 # Cuando termine de correr cambia al siguiente año y corre de nuevo
 try:
     element = wait.until(EC.element_to_be_clickable((By.ID, "dp_cotizacion")))
     element.click()
     time.sleep(1)
 
-    # Set year only once
+    # Elige el año 
     year_select = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "ui-datepicker-year")))
     Select(year_select).select_by_visible_text(str(year))
 
     for month in range(0, 12):  # 0 to 11 for Jan to Dec
         monthly_values = []
 
-        # Select the month
+        # Selecciona el mes
         month_select = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "ui-datepicker-month")))
         Select(month_select).select_by_value(str(month))
         time.sleep(1.5)
@@ -65,7 +65,7 @@ try:
                 print(f"Error on month {month}, date {fecha}: {e}")
                 continue
 
-        # End of month — calculate and store average
+        # Al final de cada mes calcula y guarda el promedio
         if monthly_values:
             avg_value = sum(monthly_values) / len(monthly_values)
             month_averages.append({"Year": year, "Month": month+1, "AverageValue": avg_value})
@@ -77,8 +77,9 @@ try:
 finally:
     driver.quit()
 
-# Create DataFrame
+# Crea DataFrame y guarda en un csv
 df = pd.DataFrame(month_averages)
 print(df)
+# Cambia el nombre de la carpeta si es necesario
 df.to_csv("usdavg2019.csv", index=False)
 
