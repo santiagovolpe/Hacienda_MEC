@@ -1,5 +1,4 @@
---cambia el titulo para cada año y la tabla final 
-CREATE TABLE hacienda_2019 (
+ CREATE TABLE hacienda_import (
     anio INT,
     mes INT,
     codigoNivel INT,
@@ -56,7 +55,7 @@ CREATE TABLE hacienda_2019 (
 
 -- el path tiene que ser donde vayan las descargas del scraper
 LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.4\\Uploads\\pgn-gasto_2019-01.csv'
-INTO TABLE hacienda_2019
+INTO TABLE hacienda_import
 CHARACTER SET latin1
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
@@ -116,9 +115,17 @@ IGNORE 1 LINES
     anioCorte,
     fechaCorte
 );
+ -- crear tabla para cada año en base a la importación con solo datos del MEC
+CREATE TABLE hacienda_2019 AS
+SELECT *
+FROM hacienda_import
+WHERE descripcionEntidad = '007-MINISTERIO DE EDUCACIÓN Y CIENCIAS';
 
--- una vez que se importen los 12 meses del año quita las columnas innecesarias
--- hace lo mismo con una tabla extra donde iran todos los años juntos despues
+-- borrar los datos de la tabla de importación
+TRUNCATE hacienda_import;
+
+-- una vez que se tenga la tabla del MEC año x, eliminar las columnas que no nos sirvan
+-- haz lo mismo con una tabla extra donde iran todos los años juntos despues
 alter table hacienda_2019
 drop column anioCorte, 
 drop column mesCorte, 
@@ -142,10 +149,16 @@ drop column codigoUnidadResponsable,
 drop column codigoEntidad,
 drop column codigoNivel;
 
--- revisa las entidades y elegi, yo elegi el MEC
-select distinct(descripcionEntidad) from hacienda_2019;
--- se borra el resto
-delete from hacienda_2019 where descripcionEntidad not like '007-MINISTERIO DE EDUCACIÓN Y CIENCIAS';
+-- borrar todos los datos que no sean los más recientes según la fecha de corte
+DELETE t
+FROM hacienda_2019 t
+LEFT JOIN (
+  SELECT mes, MAX(fechaCorte) AS max_fechaCorte
+  FROM hacienda_2023
+  GROUP BY mes
+) sub
+  ON t.mes = sub.mes AND t.fechaCorte = sub.max_fechaCorte
+WHERE sub.mes IS NULL;
 
 -- en caso de error 1175 ejecuta esto y volve a ejecutar delete
 SET SQL_SAFE_UPDATES = 0;
@@ -154,7 +167,7 @@ SET SQL_SAFE_UPDATES = 0;
 SELECT SUM(dup_count - 1) AS redundant_duplicates
 FROM (
     SELECT COUNT(*) AS dup_count
-    FROM hacienda_2020
+    FROM hacienda_2019
     GROUP BY anio, mes, descripcionNivel, descripcionEntidad, descripcionUnidadResponsable, descripcionTipoPresupuesto_ClasePrograma, descripcionPrograma, descripcionSubprograma, descripcionProyecto_Actividad, finalidad, funcion, subfuncion, grupoEconomico, subgrupoEconomico, categoriaEconomica, descripcionFuenteFinanciamiento, grupoObjetoGasto, objetoGasto, descripcionOrganismoFinanciador, departamento, descripcionUAF, nombreNivelFinanciero, descripcionClasificacion, presupuestoInicialAprobado, montoVigente, montoPlanFinancieroVigente, montoEjecutado, montoTransferido, montoPagado, fechaCorte
     HAVING COUNT(*) > 1
 ) AS duplicates;
@@ -166,6 +179,8 @@ FROM hacienda_2019;
 
 -- una vez que tengas las tablas para todos los años, uni en una sola
 INSERT INTO mec_hacienda
+SELECT * FROM hacienda_2019
+UNION ALL
 SELECT * FROM hacienda_2020
 UNION ALL
 SELECT * FROM hacienda_2021
@@ -178,7 +193,7 @@ SELECT * FROM hacienda_2024;
 
 -- exporta en un csv si deseas
 select * from mec_hacienda
-INTO OUTFILE 'C:/ProgramData/MySQL/MySQL Server 8.4/Uploads/hacienda_MEC.csv' 
+INTO OUTFILE 'C:/ProgramData/MySQL/MySQL Server 8.4/Uploads/hacienda_mec.csv' 
 FIELDS ENCLOSED BY '"' 
 TERMINATED BY ';' 
 ESCAPED BY '"' 
@@ -192,7 +207,7 @@ mes INT,
 compra REAL);
 
 -- cambia el archivo para insertar valores de cada año
-LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.4\\Uploads\\usdavg2019.csv'
+LOAD DATA INFILE 'C:\\ruta\\csv'
 INTO TABLE bcp
 CHARACTER SET latin1
 FIELDS TERMINATED BY ','
@@ -213,7 +228,7 @@ ADD COLUMN montoEjecutado_usd FLOAT,
 ADD COLUMN montoTransferido_usd FLOAT,
 ADD COLUMN montoPagado_usd FLOAT;
 
--- converti los guranies a dolares en las nuevas columnas
+-- convertir los guranies a dolares en las nuevas columnas
 UPDATE mec_hacienda a
 JOIN bcp b ON a.anio = b.anio AND a.mes = b.mes
 SET
