@@ -7,9 +7,9 @@ Este proyecto utilza los siguientes softwares:
 
 ## Ejemplo del dashboard: 
 descargar el archivo raw y abrir en PowerBi, o sino resultará en un archivo corrupto
-![image](https://github.com/user-attachments/assets/2a78cfd3-1c77-467b-9535-3decf2c1302f)
+![image](https://github.com/user-attachments/assets/1755a92f-df4e-48aa-ba22-42cc160b3b06)
 
-![image](https://github.com/user-attachments/assets/929f6338-feb1-4f84-9d6d-cfd611431bc3)
+![image](https://github.com/user-attachments/assets/04271308-1f6b-4613-9b9c-c3f3cfaca9a4)
 
-![image](https://github.com/user-attachments/assets/102eccc7-2d88-4a2f-8c2f-b96d88ff6515)
+![image](https://github.com/user-attachments/assets/73ce7a38-cbab-4e3b-aac8-c4018972bd34)
 
