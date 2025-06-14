@@ -21,7 +21,7 @@ Solo se omitirían los queries para cargar datos en caso de utilizar un servidor
 Contiene el archivo .pbix donde se podrán ver los dashboards
 
 ## Ejemplo del dashboard: 
-descargar el archivo raw y abrir en PowerBi, o sino resultará en un archivo corrupto
+descargar el archivo .pbix en releases
 ![image](https://github.com/user-attachments/assets/1755a92f-df4e-48aa-ba22-42cc160b3b06)
 
 ![image](https://github.com/user-attachments/assets/04271308-1f6b-4613-9b9c-c3f3cfaca9a4)
